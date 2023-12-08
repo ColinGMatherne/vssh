@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wpedantic -g -std=c89
 LFLAGS = -lc
 files = src/main.c
 obj = src/obj/main.o
-out = shell
+out = vssh
 
 all: $(obj)
 	$(CC) $(obj) $(CFLAGS) -o $(out) $(LFLAGS)
