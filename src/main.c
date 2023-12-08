@@ -37,7 +37,7 @@ int main()
 		printf("Couldn't get username");
 
 	while (running) {
-		fflush(NULL);							/* flush all data streams, because it makes the ctrl+d bug look better (also it's probally better to fflush anyways) */
+		fflush(NULL);							/* flush all data streams, because it's probally good (idrk tho) */
 
 		if (pid == 0) {							/* if (child_process) */
 			execve(new_command[0], new_command, NULL);
@@ -45,7 +45,9 @@ int main()
 		} else {
 			displayPrompt();
 
-			getline(&command, &n, stdin);
+			if (getline(&command, &n, stdin) == -1)
+				interruptHandler(0);
+
 			new_command[0] = strtok(command, " ");								/* break up command				*/
 			for (i = 1; (new_command[i] = strtok(NULL, " ")); i++)				/* put in char *new_command[]	*/
 				new_command[i][strcspn(new_command[i], "\n")] = '\0';			/* remove newline from EOL		*/
