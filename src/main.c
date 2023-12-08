@@ -23,31 +23,32 @@ int main()
 {
 	int i;
 	size_t n = 10;
-	char *command = NULL;
-	char *new_command[10];
 	pid_t pid = getpid();
 
-	signal(SIGINT, interruptHandler);
+	char *command = NULL;
+	char *new_command[10];
 
-	hostname = (char *)malloc(max_size);		/* would sometimes crash other times not if not for malloc */
+	signal(SIGINT, interruptHandler);			/* goes to the function when ctrl+c is pressed				*/
+
+	hostname = (char *)malloc(max_size);		/* would sometimes crash other times not if not for malloc	*/
 	if (gethostname(hostname, max_size) == -1)
 		printf("Couldn't get hostname");
 	if ((username = getlogin()) == NULL)
 		printf("Couldn't get username");
 
 	while (running) {
-		if (pid == 0) {
+		fflush(NULL);							/* flush all data streams, because it makes the ctrl+d bug look better (also it's probally better to fflush anyways) */
+
+		if (pid == 0) {							/* if (child_process) */
 			execve(new_command[0], new_command, NULL);
 			return 0;
 		} else {
 			displayPrompt();
-			getline(&command, &n, stdin);
 
-			/* break up command */
-			new_command[0] = strtok(command, " ");
-			/* put in char *new_command[] */
-			for (i = 1; (new_command[i] = strtok(NULL, " ")); i++)
-				new_command[i][strcspn(new_command[i], "\n")] = '\0';			/* remove newline from EOL */
+			getline(&command, &n, stdin);
+			new_command[0] = strtok(command, " ");								/* break up command				*/
+			for (i = 1; (new_command[i] = strtok(NULL, " ")); i++)				/* put in char *new_command[]	*/
+				new_command[i][strcspn(new_command[i], "\n")] = '\0';			/* remove newline from EOL		*/
 
 			pid = fork();
 			wait(NULL);
