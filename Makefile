@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wpedantic -g -std=c89
+CFLAGS = -Wall -Wpedantic -std=c89 -g
 LFLAGS = -lc
 files = src/main.c
 obj = src/obj/main.o
