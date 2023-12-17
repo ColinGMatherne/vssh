@@ -10,7 +10,7 @@ void divideString(char *cmd, char *delim, int *argc, char **argv);
 int main()
 {
 	char *cmd = NULL; char *delim = " \n"; size_t n = 0;
-	int argc; char **argv;
+	int argc; char **argv = NULL; pid_t pid = getpid();
 
 	printf("> ");
 	if (getline(&cmd, &n, stdin) == -1)
@@ -20,10 +20,14 @@ int main()
 	argv = (char **)malloc(sizeof(char *) * argc);
 	divideString(cmd, delim, NULL, argv);
 
-	execv(argv[0], argv);
+	pid = fork();
+	if (pid == 0)
+		execv(argv[0], argv);
+	wait(&pid);
 
 	free(cmd);
 	free(argv);
+	main();
 
 	return 0;
 }
