@@ -9,25 +9,32 @@ void divideString(char *cmd, char *delim, int *argc, char **argv);
 
 int main()
 {
-	char *cmd = NULL; char *delim = " \n"; size_t n = 0;
-	int argc; char **argv = NULL; pid_t pid = getpid();
+	while (1) {
+		char *cmd = NULL; char *delim = " \n"; size_t n = 0;
+		int argc; char **argv = NULL; pid_t pid = getpid();
 
-	printf("> ");
-	if (getline(&cmd, &n, stdin) == -1)
-		return -1;
+		printf("> ");
+		if (getline(&cmd, &n, stdin) == -1)
+			return -1;
 
-	divideString(cmd, delim, &argc, NULL);				/* need JUST argc to malloc argv */
-	argv = (char **)malloc(sizeof(char *) * argc);
-	divideString(cmd, delim, NULL, argv);
+		divideString(cmd, delim, &argc, NULL);				/* need JUST argc to malloc argv */
+		if ((argv = (char **)malloc(sizeof(char *) * argc)) == NULL) {
+			perror("Could not allocate memoty");
+			exit(EXIT_FAILURE);
+		}
+		divideString(cmd, delim, NULL, argv);
 
-	pid = fork();
-	if (pid == 0)
-		execv(argv[0], argv);
-	wait(&pid);
+		pid = fork();
+		if (pid == 0)
+			if (execv(argv[0], argv) == -1) {
+				perror("Could not execute command");
+				exit(EXIT_FAILURE);
+			}
+		wait(&pid);
 
-	free(cmd);
-	free(argv);
-	main();
+		free(cmd);
+		free(argv);
+	}
 
 	return 0;
 }
@@ -52,4 +59,5 @@ void divideString(char *cmd, char *delim, int *argc, char **argv) {
 
 	if (argc != NULL)
 		*argc = i;
+	free(cmd_cpy);
 }
