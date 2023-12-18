@@ -7,6 +7,7 @@
 
 #define MAX_ARGS 255
 
+
 void divideString(char *cmd, char *delim, char **argv);
 
 int main()
